@@ -8,36 +8,39 @@ fig_count = 0
 
 def checkLine(line):
 
+    line = line.replace("\\", "\\\\")
+
     global fig_count
 
     m = re.search("^# (.*)", line)
     if m:
-        return "\section{" + m.group(1) + "}"
+        return "\section{" + m.group(1) + "}\n"
 
     m = re.search("^## (.*)", line)
     if m:
-        return "\subsection{" + m.group(1) + "}"
+        return "\subsection{" + m.group(1) + "}\n"
 
     m = re.search("^### (.*)", line)
     if m:
-        return "\subsubsection{" + m.group(1) + "}"
+        return "\subsubsection{" + m.group(1) + "}\n"
 
     m = re.search("!\[(.*)\]\((.*)\)", line)
     if m:
         out = """
 \\begin{{figure}}[ht]
     \\centering
-    \\includegraphics{{{}}}
+    \\includegraphics[width=\\maxwidth{{\\linewidth}}]{{{}}}
     \\caption{{{}}}
     \\label{{{}}}
-\\end{{figure}}
+\\end{{figure}}\n
 """.format(m.group(2), m.group(1), "fig" + str(fig_count))
         fig_count += 1
         return out
 
-    m = re.search("\[(.*)\]\((.*)\)", line)
+    m = re.search("\[(.*)\]\((.*)\)(.*)", line)
     if m:
-        return "\href{" + m.group(2) + "}{" + m.group(1) + "}"
+        return "\href{" + m.group(2) + "}{" + m.group(1) + "}" + m.group(3)
+        + "\n"
 
     return line
 
@@ -75,7 +78,7 @@ if __name__ == "__main__":
                 content = f.read()
                 content = content.replace("CONTENT", output)
 
-                with open(os.path.join(path, "converted.tex"), "w") as fd:
+                with open(os.path.join(path, "converted.tex"), "w+") as fd:
                     fd.write(content)
 
                     print("Finished writing")
