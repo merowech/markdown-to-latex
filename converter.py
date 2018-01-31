@@ -39,7 +39,7 @@ def checkLine(line):
 
     m = re.search("\[(.*)\]\((.*)\)(.*)", line)
     if m:
-        return "\href{" + m.group(2) + "}{" + m.group(1) + "}" + m.group(3)
+        return "\href{" + m.group(2) + "}{" + m.group(1) + "}\n" + m.group(3)
         + "\n"
 
     return line
@@ -72,7 +72,17 @@ if __name__ == "__main__":
 
         # check for template
         if len(sys.argv) > 2:
-            print(sys.argv[2])
+            if sys.argv[2] == "lncs":
+                with open("templates/lncs.tex", "r") as f:
+                    content = f.read()
+                    content = content.replace("CONTENT", output)
+
+                    with open(os.path.join(path, "converted.tex"), "w+") as fd:
+                        fd.write(content)
+
+                        print("Finished writing")
+            else:
+                print(sys.argv[2])
         else:
             with open("templates/standard.tex", "r") as f:
                 content = f.read()
