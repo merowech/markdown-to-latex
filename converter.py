@@ -45,6 +45,40 @@ def checkLine(line):
     return line
 
 
+def readMetaFile(path):
+    ret = {}
+
+    with open(path, "r") as f:
+        content = f.read()
+
+        idx = content.find("# outline")
+        if idx > -1:
+            idx_b = idx + len("# outline")
+            idx_e = content.find("#", idx_b)
+            if idx_e == -1:
+                idx_e = len(content)
+
+            substring = content[idx_b:idx_e]
+
+            files = []
+            for sub in substring.split("\n"):
+                if sub:
+                    files.append(sub)
+
+            ret["files"] = files
+
+        idx = content.find("# reference")
+        if idx > -1:
+            idx_b = idx + len("# reference")
+            idx_e = content.find("#", idx_b)
+            if idx_e == -1:
+                idx_e = len(content)
+
+            substring = content[idx_b:idx_e]
+
+    return ret
+
+
 if __name__ == "__main__":
 
     output = ""
@@ -60,6 +94,12 @@ if __name__ == "__main__":
         # get files
         files = [f for f in os.listdir(path)
                  if os.path.isfile(os.path.join(path, f))]
+
+        if "meta.md" in files:
+            meta_data = readMetaFile(os.path.join(path, "meta.md"))
+
+            if "files" in meta_data:
+                files = meta_data["files"]
 
         # loop through files
         for f in files:
