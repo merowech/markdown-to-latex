@@ -1,3 +1,13 @@
+%
+% ---- Bibliography ----
+%
+\begin{filecontents}{library.bib}
+
+BIBLIOGRAPHY
+
+\end{filecontents}
+
+
 % This is based on the LLNCS.DEM the demonstration file of
 % the LaTeX macro package from Springer-Verlag
 % for Lecture Notes in Computer Science,
@@ -15,6 +25,7 @@
 \makeatletter
 \def\maxwidth#1{\ifdim\Gin@nat@width>#1 #1\else\Gin@nat@width\fi}
 \makeatother
+
 
 \begin{document}
 
@@ -35,13 +46,7 @@ ABSTRACT
 
 CONTENT
 
-%
-% ---- Bibliography ----
-%
-\begin{filecontents}{lib.bib}
-
-BIBLIOGRAPHY
-
-\end{filecontents}
+\bibliography{library.bib}
+\nocite{*}
 
 \end{document}

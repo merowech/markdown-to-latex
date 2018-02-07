@@ -9,6 +9,8 @@ fig_count = 0
 def checkLine(line):
 
     line = line.replace("\\", "\\\\")
+    if line[-2:] == "  ":
+        line = line[-2:] + "\\newline"
 
     global fig_count
 
@@ -76,6 +78,38 @@ def readMetaFile(path):
 
             substring = content[idx_b:idx_e]
 
+            ret["reference"] = substring
+
+        idx = content.find("# abstract")
+        if idx > -1:
+            idx_b = idx + len("# abstract")
+            idx_e = content.find("#", idx_b)
+            if idx_e == -1:
+                idx_e = len(content)
+
+            substring = content[idx_b:idx_e]
+
+            ret["abstract"] = substring
+
+        idx = content.find("# metadata")
+        if idx > -1:
+            idx_b = idx + len("# metadata")
+            idx_e = content.find("#", idx_b)
+            if idx_e == -1:
+                idx_e = len(content)
+
+            substring = content[idx_b:idx_e]
+            lines = substring.split("\n")
+
+            meta = {}
+            for line in lines:
+                if line == "":
+                    continue
+                meta_lines = line.split("=")
+                meta[meta_lines[0].rstrip()] = meta_lines[1].lstrip()
+
+            ret["meta"] = meta
+
     return ret
 
 
@@ -95,6 +129,7 @@ if __name__ == "__main__":
         files = [f for f in os.listdir(path)
                  if os.path.isfile(os.path.join(path, f))]
 
+        meta_data = {}
         if "meta.md" in files:
             meta_data = readMetaFile(os.path.join(path, "meta.md"))
 
@@ -116,6 +151,16 @@ if __name__ == "__main__":
                 with open("templates/lncs.tex", "r") as f:
                     content = f.read()
                     content = content.replace("CONTENT", output)
+
+                    if "reference" in meta_data:
+                        content = content.replace("BIBLIOGRAPHY", meta_data["reference"])
+
+                    if "abstract" in meta_data:
+                        content = content.replace("ABSTRACT", meta_data["abstract"])
+
+                    if "meta" in meta_data:
+                        for key in meta_data["meta"]:
+                            content = content.replace(key, meta_data["meta"][key])
 
                     with open(os.path.join(path, "converted.tex"), "w+") as fd:
                         fd.write(content)
