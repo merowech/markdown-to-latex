@@ -26,8 +26,12 @@ def checkLine(line):
     if m:
         return "\subsubsection{" + m.group(1) + "}\n"
 
-    m = re.search("!\[(.*)\]\((.*)\)", line)
+    m = re.search("!\[(.*?)\]\((.*?)\)(\[(.*?)\]\((.*?)\))?", line)
     if m:
+        img_path = m.group(2)
+        caption = m.group(1)
+        if m.group(3):
+            caption += " - \href{" + m.group(5) + "}{" + m.group(4) + "}"
         out = """
 \\begin{{figure}}[ht]
     \\centering
@@ -35,7 +39,7 @@ def checkLine(line):
     \\caption{{{}}}
     \\label{{{}}}
 \\end{{figure}}\n
-""".format(m.group(2), m.group(1), "fig" + str(fig_count))
+""".format(img_path, caption, "fig" + str(fig_count))
         fig_count += 1
         return out
 
@@ -56,7 +60,7 @@ def readMetaFile(path):
         idx = content.find("# outline")
         if idx > -1:
             idx_b = idx + len("# outline")
-            idx_e = content.find("#", idx_b)
+            idx_e = content.find("# ", idx_b)
             if idx_e == -1:
                 idx_e = len(content)
 
@@ -72,7 +76,7 @@ def readMetaFile(path):
         idx = content.find("# reference")
         if idx > -1:
             idx_b = idx + len("# reference")
-            idx_e = content.find("#", idx_b)
+            idx_e = content.find("# ", idx_b)
             if idx_e == -1:
                 idx_e = len(content)
 
@@ -83,7 +87,7 @@ def readMetaFile(path):
         idx = content.find("# abstract")
         if idx > -1:
             idx_b = idx + len("# abstract")
-            idx_e = content.find("#", idx_b)
+            idx_e = content.find("# ", idx_b)
             if idx_e == -1:
                 idx_e = len(content)
 
@@ -94,7 +98,7 @@ def readMetaFile(path):
         idx = content.find("# metadata")
         if idx > -1:
             idx_b = idx + len("# metadata")
-            idx_e = content.find("#", idx_b)
+            idx_e = content.find("# ", idx_b)
             if idx_e == -1:
                 idx_e = len(content)
 

@@ -1,13 +1,3 @@
-%
-% ---- Bibliography ----
-%
-\begin{filecontents}{library.bib}
-
-BIBLIOGRAPHY
-
-\end{filecontents}
-
-
 % This is based on the LLNCS.DEM the demonstration file of
 % the LaTeX macro package from Springer-Verlag
 % for Lecture Notes in Computer Science,
@@ -21,10 +11,21 @@ BIBLIOGRAPHY
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage[utf8]{inputenc}
+\usepackage{filecontents}
 
 \makeatletter
 \def\maxwidth#1{\ifdim\Gin@nat@width>#1 #1\else\Gin@nat@width\fi}
 \makeatother
+
+
+%
+% ---- Bibliography ----
+%
+\begin{filecontents}{library.bib}
+
+BIBLIOGRAPHY
+
+\end{filecontents}
 
 
 \begin{document}
@@ -46,6 +47,7 @@ ABSTRACT
 
 CONTENT
 
+\bibliographystyle{alphadin}
 \bibliography{library.bib}
 \nocite{*}
 
