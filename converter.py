@@ -9,11 +9,17 @@ fig_count = 0
 def checkLine(line):
 
     line = line.replace("\\", "\\\\")
-    if line[-2:] == "  ":
-        line = line[-2:] + "\\newline"
+
+    if line[-3:-2] == " " and line[-2:-1] == " ":
+        line = line[:-3] + "\\newline\n"
+
+    m = re.search("\*\*(.*?)\*\*", line)
+    if m:
+        line = line.replace(m.group(0), "\\noindent\\textbf{ " + m.group(1) + "}")
 
     global fig_count
 
+    # Headlines
     m = re.search("^# (.*)", line)
     if m:
         return "\section{" + m.group(1) + "}\n"
@@ -26,6 +32,7 @@ def checkLine(line):
     if m:
         return "\subsubsection{" + m.group(1) + "}\n"
 
+    # Images with conditional source link
     m = re.search("!\[(.*?)\]\((.*?)\)(\[(.*?)\]\((.*?)\))?", line)
     if m:
         img_path = m.group(2)
@@ -43,10 +50,21 @@ def checkLine(line):
         fig_count += 1
         return out
 
+    # Itemize
+    m = re.search("\s+-\s(.*)", line)
+    if m:
+        line = line.replace(m.group(0), "\item " + m.group(1) + "\n")
+
+    # Cite
+    m = re.search("<!--cite:(.*?)-->", line)
+    if m:
+        line = line.replace(m.group(0), "\cite{" + m.group(1) + "} ")
+
+    # Links
     m = re.search("\[(.*)\]\((.*)\)(.*)", line)
     if m:
-        return "\href{" + m.group(2) + "}{" + m.group(1) + "}\n" + m.group(3)
-        + "\n"
+        line = line.replace(m.group(0), "\href{" + m.group(2) + "}{"
+                            + m.group(1) + "}\n" + m.group(3)) + "\n"
 
     return line
 
@@ -145,8 +163,18 @@ if __name__ == "__main__":
             with open(os.path.join(path, f)) as fd:
                 lines = fd.readlines()
 
+                new_list = False
                 for line in lines:
-                    output += checkLine(line)
+                    line = checkLine(line)
+                    if "\item" in line:
+                        if not new_list:
+                            output += "\\begin{itemize}\n"
+                            new_list = True
+                    else:
+                        if new_list:
+                            output += "\\end{itemize}\n"
+                            new_list = False
+                    output += line
             output += "\n"
 
         # check for template
