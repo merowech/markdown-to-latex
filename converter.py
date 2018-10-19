@@ -40,7 +40,7 @@ def checkLine(line):
         if m.group(3):
             caption += " - \href{" + m.group(5) + "}{" + m.group(4) + "}"
         out = """
-\\begin{{figure}}[ht]
+\\begin{{figure}}[H]
     \\centering
     \\includegraphics[width=\\maxwidth{{\\linewidth}}]{{{}}}
     \\caption{{{}}}
